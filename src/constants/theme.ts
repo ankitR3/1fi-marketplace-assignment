@@ -24,6 +24,14 @@ export const Colors = {
   },
 } as const;
 
+export const BrandColors = {
+  primary: '#5B2A9D',
+  primaryLight: '#EDE7F6',
+  accent: '#8B5CF6',
+  cardBackground: '#FFFFFF',
+  pageBackground: '#F5F5F7',
+} as const;
+
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 export const Fonts = Platform.select({
