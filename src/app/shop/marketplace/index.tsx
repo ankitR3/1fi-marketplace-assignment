@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Button } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Button, View, Text } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { ProductCard } from '@/components/ProductCard';
 import { fetchProducts, type Product } from '@/data/mockProducts';
 import { Spacing } from '@/constants/theme';
@@ -32,36 +30,35 @@ export default function MarketplaceScreen() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#6D28D9" />
+      </View>
     );
   }
 
   if (error) {
     return (
-      <ThemedView style={styles.centered}>
-        <ThemedText style={styles.errorText}>{error}</ThemedText>
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{error}</Text>
         <Button title="Retry" onPress={loadProducts} />
-      </ThemedView>
+      </View>
     );
   }
 
   if (products.length === 0) {
     return (
-      <ThemedView style={styles.centered}>
-        <ThemedText>No products found.</ThemedText>
-      </ThemedView>
+      <View style={styles.centered}>
+        <Text style={styles.emptyText}>No products found.</Text>
+      </View>
     );
   }
 
   return (
     <FlatList
       data={products}
-      numColumns={2}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.list}
-      columnWrapperStyle={styles.row}
+      ItemSeparatorComponent={() => <View style={{ height: Spacing.three }} />}
       renderItem={({ item }) => (
         <ProductCard
           product={item}
@@ -73,8 +70,14 @@ export default function MarketplaceScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: Spacing.three, gap: Spacing.three },
-  row: { gap: Spacing.three },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: Spacing.two },
-  errorText: { color: 'red', textAlign: 'center' },
+  list: { padding: Spacing.three, backgroundColor: '#F5F5F7' },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: Spacing.two,
+    backgroundColor: '#F5F5F7',
+  },
+  errorText: { color: '#D32F2F', textAlign: 'center' },
+  emptyText: { color: '#666' },
 });

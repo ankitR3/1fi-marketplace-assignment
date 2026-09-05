@@ -1,6 +1,4 @@
-import { Image, Pressable, StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Spacing } from '@/constants/theme';
 import type { Product } from '@/data/mockProducts';
 
@@ -10,37 +8,59 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onPress }: ProductCardProps) {
+  const cheapestNoCostPlan = product.emiPlans
+    .filter((p) => p.isNoCost)
+    .sort((a, b) => b.tenureMonths - a.tenureMonths)[0];
+
   return (
-    <Pressable onPress={onPress}>
-      <ThemedView type="backgroundElement" style={styles.card}>
-        <Image source={{ uri: product.imageUrl }} style={styles.image} />
-        <ThemedText numberOfLines={1} style={styles.name}>
+    <Pressable onPress={onPress} style={styles.card}>
+      <Image
+        source={{ uri: product.imageUrl }}
+        style={styles.image}
+        onError={(e) => console.log('Image failed:', product.imageUrl, e.nativeEvent.error)}
+      />
+      <View style={styles.textCol}>
+        <Text numberOfLines={1} style={styles.name}>
           {product.name}
-        </ThemedText>
-        <ThemedText type="small" style={styles.price}>
-          ₹{product.price.toLocaleString('en-IN')}
-        </ThemedText>
-      </ThemedView>
+        </Text>
+        <Text numberOfLines={1} style={styles.subtitle}>
+          {cheapestNoCostPlan
+            ? `No-cost EMIs upto ${cheapestNoCostPlan.tenureMonths} months`
+            : `₹${product.price.toLocaleString('en-IN')}`}
+        </Text>
+      </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
     borderRadius: Spacing.three,
     padding: Spacing.two,
-    flex: 1,
-    gap: Spacing.one,
+    gap: Spacing.three,
+    shadowColor: '#939393',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   image: {
-    width: '100%',
-    aspectRatio: 1,
+    width: 64,
+    height: 64,
     borderRadius: Spacing.two,
+    backgroundColor: '#f0f0f0',
   },
+  textCol: { flex: 1, gap: 2 },
   name: {
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#111',
   },
-  price: {
-    opacity: 0.7,
+  subtitle: {
+    color: '#666',
+    fontSize: 13,
   },
 });

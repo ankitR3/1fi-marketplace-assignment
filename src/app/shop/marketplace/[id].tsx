@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Pressable, View, Text, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { EMIPlanSelector } from '@/components/EMIPlanSelector';
 import { fetchProductById, type Product } from '@/data/mockProducts';
 import { BrandColors, Spacing } from '@/constants/theme';
@@ -38,41 +36,39 @@ export default function ProductDetailScreen() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </ThemedView>
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={BrandColors.primary} />
+      </View>
     );
   }
 
   if (error) {
     return (
-      <ThemedView style={styles.centered}>
-        <ThemedText style={styles.errorText}>{error}</ThemedText>
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{error}</Text>
         <Button title="Retry" onPress={load} />
-      </ThemedView>
+      </View>
     );
   }
 
   if (!product) {
     return (
-      <ThemedView style={styles.centered}>
-        <ThemedText>Product not found.</ThemedText>
-      </ThemedView>
+      <View style={styles.centered}>
+        <Text style={styles.emptyText}>Product not found.</Text>
+      </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
       <Image source={{ uri: product.imageUrl }} style={styles.image} />
-      <ThemedText type="title">{product.name}</ThemedText>
-      <ThemedText style={styles.price}>
+      <Text style={styles.title}>{product.name}</Text>
+      <Text style={styles.price}>
         ₹{product.price.toLocaleString('en-IN')}
-      </ThemedText>
+      </Text>
 
-      <ThemedText type="subtitle" style={styles.sectionHeading}>
-        Select Variant
-      </ThemedText>
-      <ThemedView style={styles.variantRow}>
+      <Text style={styles.sectionHeading}>Select Variant</Text>
+      <View style={styles.variantRow}>
         {product.variants.map((variant) => {
           const isSelected = variant.id === selectedVariantId;
           return (
@@ -81,13 +77,13 @@ export default function ProductDetailScreen() {
               onPress={() => setSelectedVariantId(variant.id)}
               style={[styles.variantPill, isSelected && styles.variantPillSelected]}
             >
-              <ThemedText style={isSelected ? styles.variantTextSelected : undefined}>
+              <Text style={isSelected ? styles.variantTextSelected : styles.variantText}>
                 {variant.label}
-              </ThemedText>
+              </Text>
             </Pressable>
           );
         })}
-      </ThemedView>
+      </View>
 
       <EMIPlanSelector
         plans={product.emiPlans}
@@ -98,23 +94,34 @@ export default function ProductDetailScreen() {
       <Pressable
         style={styles.ctaButton}
         onPress={() => {
-          // TODO: hook this up to whatever "proceed" flow makes sense —
-          // e.g. router.push to a confirmation screen, or just an alert for now
+          Alert.alert(
+            'Order Placed',
+            `You've selected ${product.variants.find(v => v.id === selectedVariantId)?.label} on a ${product.emiPlans.find(p => p.id === selectedPlanId)?.tenureMonths}-month plan.`
+          );
         }}
       >
-        <ThemedText style={styles.ctaText}>Proceed with this plan</ThemedText>
+        <Text style={styles.ctaText}>Proceed with this plan</Text>
       </Pressable>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: Spacing.three, gap: Spacing.two, paddingBottom: Spacing.six },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: Spacing.two },
-  errorText: { color: 'red', textAlign: 'center' },
+  screen: { flex: 1, backgroundColor: '#F5F5F7' },
+  container: { padding: Spacing.three, gap: Spacing.two, paddingBottom: Spacing.six + 50 },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: Spacing.two,
+    backgroundColor: '#F5F5F7',
+  },
+  errorText: { color: '#D32F2F', textAlign: 'center' },
+  emptyText: { color: '#666' },
   image: { width: '100%', aspectRatio: 1, borderRadius: Spacing.three },
+  title: { fontSize: 24, fontWeight: '800', color: '#111' },
   price: { fontSize: 20, fontWeight: '700', color: BrandColors.primary },
-  sectionHeading: { marginTop: Spacing.three },
+  sectionHeading: { fontSize: 18, fontWeight: '700', color: '#111', marginTop: Spacing.three },
   variantRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   variantPill: {
     paddingHorizontal: Spacing.three,
@@ -127,13 +134,14 @@ const styles = StyleSheet.create({
     borderColor: BrandColors.primary,
     backgroundColor: BrandColors.primaryLight,
   },
+  variantText: { color: '#333' },
   variantTextSelected: { color: BrandColors.primary, fontWeight: '600' },
   ctaButton: {
     backgroundColor: BrandColors.primary,
     borderRadius: Spacing.three,
     paddingVertical: Spacing.three,
     alignItems: 'center',
-    marginTop: Spacing.three,
+    marginTop: Spacing.one,
   },
   ctaText: { color: '#fff', fontWeight: '700', fontSize: 16 },
 });

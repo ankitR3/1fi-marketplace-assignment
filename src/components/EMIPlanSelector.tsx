@@ -1,6 +1,4 @@
-import { Pressable, StyleSheet } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BrandColors, Spacing } from '@/constants/theme';
 import type { EMIPlan } from '@/data/mockProducts';
 
@@ -12,10 +10,8 @@ interface EMIPlanSelectorProps {
 
 export function EMIPlanSelector({ plans, selectedPlanId, onSelect }: EMIPlanSelectorProps) {
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="subtitle" style={styles.heading}>
-        Choose EMI Plan
-      </ThemedText>
+    <View style={styles.container}>
+      <Text style={styles.heading}>Choose EMI Plan</Text>
       {plans.map((plan) => {
         const isSelected = plan.id === selectedPlanId;
         return (
@@ -24,29 +20,27 @@ export function EMIPlanSelector({ plans, selectedPlanId, onSelect }: EMIPlanSele
             onPress={() => onSelect(plan.id)}
             style={[styles.planRow, isSelected && styles.planRowSelected]}
           >
-            <ThemedView style={styles.radioOuter}>
-              {isSelected && <ThemedView style={styles.radioInner} />}
-            </ThemedView>
-            <ThemedView style={styles.planTextGroup}>
-              <ThemedText style={styles.planTenure}>
+            <View style={styles.radioOuter}>
+              {isSelected && <View style={styles.radioInner} />}
+            </View>
+            <View style={styles.planTextGroup}>
+              <Text style={styles.planTenure}>
                 {plan.tenureMonths} months — ₹{plan.monthlyAmount.toLocaleString('en-IN')}/mo
-              </ThemedText>
+              </Text>
               {plan.isNoCost && (
-                <ThemedText type="small" style={styles.noCostTag}>
-                  No-Cost EMI
-                </ThemedText>
+                <Text style={styles.noCostTag}>No-Cost EMI</Text>
               )}
-            </ThemedView>
+            </View>
           </Pressable>
         );
       })}
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { gap: Spacing.two, paddingVertical: Spacing.three },
-  heading: { marginBottom: Spacing.one },
+  heading: { fontSize: 18, fontWeight: '700', color: '#111', marginBottom: Spacing.one },
   planRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -55,6 +49,7 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.two,
     borderWidth: 1,
     borderColor: '#E0E0E0',
+    backgroundColor: '#fff',
   },
   planRowSelected: {
     borderColor: BrandColors.primary,
@@ -76,6 +71,6 @@ const styles = StyleSheet.create({
     backgroundColor: BrandColors.primary,
   },
   planTextGroup: { gap: 2 },
-  planTenure: { fontWeight: '600' },
-  noCostTag: { color: BrandColors.primary },
+  planTenure: { fontWeight: '600', color: '#111' },
+  noCostTag: { color: BrandColors.primary, fontSize: 13 },
 });
