@@ -1,5 +1,5 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Spacing } from '@/constants/theme';
+import { BrandColors, Spacing } from '@/constants/theme';
 import type { Product } from '@/data/mockProducts';
 
 interface ProductCardProps {
@@ -17,17 +17,25 @@ export function ProductCard({ product, onPress }: ProductCardProps) {
       <Image
         source={{ uri: product.imageUrl }}
         style={styles.image}
-        onError={(e) => console.log('Image failed:', product.imageUrl, e.nativeEvent.error)}
       />
       <View style={styles.textCol}>
         <Text numberOfLines={1} style={styles.name}>
           {product.name}
         </Text>
-        <Text numberOfLines={1} style={styles.subtitle}>
-          {cheapestNoCostPlan
-            ? `No-cost EMIs upto ${cheapestNoCostPlan.tenureMonths} months`
-            : `₹${product.price.toLocaleString('en-IN')}`}
+        <Text style={styles.price}>
+          ₹{product.price.toLocaleString('en-IN')}
         </Text>
+        {cheapestNoCostPlan ? (
+          <View style={styles.emiBadge}>
+            <Text style={styles.emiBadgeText}>
+              No-cost EMI from ₹{cheapestNoCostPlan.monthlyAmount.toLocaleString('en-IN')}/mo
+            </Text>
+          </View>
+        ) : (
+          <Text style={styles.emiSubtitle}>
+            EMI options available
+          </Text>
+        )}
       </View>
     </Pressable>
   );
@@ -59,8 +67,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#111',
   },
-  subtitle: {
+  price: {
+    fontWeight: '700',
+    fontSize: 14,
+    color: '#111',
+  },
+  emiBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: BrandColors.primaryLight,
+    paddingHorizontal: Spacing.one + 2,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 2,
+  },
+  emiBadgeText: {
+    color: BrandColors.primary,
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  emiSubtitle: {
     color: '#666',
-    fontSize: 13,
+    fontSize: 12,
   },
 });

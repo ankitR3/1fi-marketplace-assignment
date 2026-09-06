@@ -58,7 +58,7 @@ export default function MarketplaceScreen() {
       data={products}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.list}
-      ItemSeparatorComponent={() => <View style={{ height: Spacing.three }} />}
+      ItemSeparatorComponent={() => <View style={{ height: 13 }} />}
       renderItem={({ item }) => (
         <ProductCard
           product={item}
