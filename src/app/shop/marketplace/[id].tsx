@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Pressable, View, Text } from 'react-native';
+import { Button, Image, ScrollView, StyleSheet, Pressable, View, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { EMIPlanSelector } from '@/components/EMIPlanSelector';
 import { OrderConfirmationModal } from '@/components/OrderConfirmationModal';
+import { ProductDetailSkeleton } from '@/components/ProductDetailSkeleton';
 import { fetchProductById, type Product } from '@/data/mockProducts';
 import { BrandColors, Spacing } from '@/constants/theme';
 
@@ -68,11 +69,7 @@ export default function ProductDetailScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={BrandColors.primary} />
-      </View>
-    );
+    return <ProductDetailSkeleton />;
   }
 
   if (error) {

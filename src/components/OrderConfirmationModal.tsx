@@ -1,3 +1,6 @@
+import { BrandColors, Spacing } from '@/constants/theme';
+import type { EMIPlan, Product, ProductVariant } from '@/data/mockProducts';
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   Image,
@@ -7,9 +10,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { BrandColors, Spacing } from '@/constants/theme';
-import type { EMIPlan, Product, ProductVariant } from '@/data/mockProducts';
 
 interface OrderConfirmationModalProps {
   visible: boolean;

@@ -1,7 +1,7 @@
-import { Tabs, router } from 'expo-router';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Tabs, router } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TAB_CONFIG = [
   { name: 'index', label: 'Home', icon: 'home-outline' as const, iconActive: 'home' as const, enabled: true },
@@ -25,12 +25,12 @@ function CustomTabBar({ state, navigation }: any) {
               key={route.key}
               disabled={!config.enabled}
               onPress={() => {
-                if (config.enabled) {
-                  if (route.name === 'shop') {
-                    router.replace('/shop');
-                  } else {
-                    navigation.navigate(route.name);
-                  }
+                if (!config.enabled || isFocused) return;
+
+                if (route.name === 'shop') {
+                  router.replace({ pathname: '/shop', params: { resetToTopBrands: Date.now().toString() } });
+                } else {
+                  navigation.navigate(route.name);
                 }
               }}
               style={styles.tabItem}

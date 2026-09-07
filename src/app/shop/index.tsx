@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { useFocusEffect } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, Pressable, TextInput, Platform } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,13 +13,23 @@ type Tab = typeof TABS[number];
 export default function ShopScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('Top Brands');
   const [marketplaceKey, setMarketplaceKey] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { resetToTopBrands } = useLocalSearchParams<{ resetToTopBrands?: string }>();
 
-  useFocusEffect(
-    useCallback(() => {
+  useEffect(() => {
+    if (resetToTopBrands) {
       setActiveTab('Top Brands');
       setMarketplaceKey((k) => k + 1);
-    }, [])
-  );
+      setSearchQuery('');
+    }
+  }, [resetToTopBrands]);
+
+  const handleSearchChange = (text: string) => {
+    setSearchQuery(text);
+    if (text.trim().length > 0 && activeTab !== '1Fi Marketplace') {
+      setActiveTab('1Fi Marketplace');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -57,7 +67,12 @@ export default function ShopScreen() {
           return (
             <Pressable
               key={tab}
-              onPress={() => setActiveTab(tab)}
+              onPress={() => {
+                setActiveTab(tab);
+                if (tab !== '1Fi Marketplace') {
+                  setSearchQuery('');
+                }
+              }}
               style={[styles.tabPill, isActive && styles.tabPillActive]}
             >
               <Text style={isActive ? styles.tabTextActive : styles.tabText}>
@@ -71,13 +86,32 @@ export default function ShopScreen() {
 
       <View style={styles.searchBar}>
         <Ionicons name="search" size={18} color="#999" />
-        <Text style={styles.searchPlaceholder}>
-          {activeTab === 'Nearby Stores'
-            ? 'Search stores...'
-            : activeTab === '1Fi Marketplace'
-            ? 'Search products or brands...'
-            : 'Search online stores...'}
-        </Text>
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={handleSearchChange}
+          placeholder={
+            activeTab === 'Nearby Stores'
+              ? 'Search stores...'
+              : activeTab === '1Fi Marketplace'
+              ? 'Search products or brands...'
+              : 'Search online stores...'
+          }
+          placeholderTextColor="#999"
+          returnKeyType="search"
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="never"
+        />
+        {searchQuery.length > 0 && (
+          <Pressable
+            onPress={() => setSearchQuery('')}
+            hitSlop={10}
+            style={styles.clearSearchBtn}
+          >
+            <Ionicons name="close-circle" size={18} color="#999" />
+          </Pressable>
+        )}
       </View>
 
       {activeTab === 'Top Brands' && (
@@ -112,7 +146,7 @@ export default function ShopScreen() {
 
       {/* Marketplace stays MOUNTED — just hidden via style so switching top tabs never refetches */}
       <View style={[styles.content, activeTab !== '1Fi Marketplace' && styles.hidden]}>
-        <MarketplaceScreen key={marketplaceKey} />
+        <MarketplaceScreen key={marketplaceKey} searchQuery={searchQuery} />
       </View>
     </View>
   );
@@ -178,17 +212,26 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 15,
     backgroundColor: '#fff',
     marginHorizontal: Spacing.three,
     marginTop: Spacing.three,
     borderRadius: 999,
-    paddingVertical: Spacing.two + (Spacing.three - Spacing.two) / 2,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 5,
     paddingHorizontal: Spacing.three,
     borderWidth: 1,
     borderColor: '#eaeaea',
   },
-  searchPlaceholder: { color: '#999', fontSize: 13 },
+  searchInput: {
+    flex: 1,
+    fontSize: 13,
+    color: '#111',
+    marginLeft: 8,
+    paddingVertical: 0,
+  },
+  clearSearchBtn: {
+    padding: 2,
+    marginLeft: 4,
+  },
   sectionHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
