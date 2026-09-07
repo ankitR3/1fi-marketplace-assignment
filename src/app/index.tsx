@@ -1,19 +1,17 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title">1Fi</ThemedText>
-        <ThemedText type="small" style={styles.subtitle}>
+        <Text style={styles.title}>1Fi</Text>
+        <Text style={styles.subtitle}>
           Invest, borrow, and shop — all in one place.
-        </ThemedText>
+        </Text>
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
@@ -26,8 +24,14 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
     paddingHorizontal: Spacing.four,
   },
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#111',
+  },
   subtitle: {
     textAlign: 'center',
-    opacity: 0.6,
+    fontSize: 16,
+    color: '#666',
   },
 });
