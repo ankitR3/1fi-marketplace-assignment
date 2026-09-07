@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Button, View, Text } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, Button, View, Text } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { ProductCard } from '@/components/ProductCard';
+import { ProductListSkeleton } from '@/components/ProductCardSkeleton';
 import { fetchProducts, type Product } from '@/data/mockProducts';
 import { Spacing } from '@/constants/theme';
 
@@ -24,16 +25,39 @@ export default function MarketplaceScreen() {
     }
   };
 
-  useEffect(() => {
-    loadProducts();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const run = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const result = await fetchProducts();
+          if (isActive) {
+            setProducts(result);
+          }
+        } catch (err) {
+          if (isActive) {
+            setError(err instanceof Error ? err.message : 'Something went wrong');
+          }
+        } finally {
+          if (isActive) {
+            setLoading(false);
+          }
+        }
+      };
+
+      run();
+
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
 
   if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#6D28D9" />
-      </View>
-    );
+    return <ProductListSkeleton count={3} />;
   }
 
   if (error) {
@@ -70,7 +94,7 @@ export default function MarketplaceScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: Spacing.three, backgroundColor: '#F5F5F7' },
+  list: { padding: Spacing.three, paddingTop: 1, backgroundColor: '#F5F5F7' },
   centered: {
     flex: 1,
     justifyContent: 'center',

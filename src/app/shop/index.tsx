@@ -60,14 +60,16 @@ export default function ShopScreen() {
         })}
       </View>
 
-      {activeTab !== '1Fi Marketplace' && (
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={18} color="#999" />
-          <Text style={styles.searchPlaceholder}>
-            {activeTab === 'Nearby Stores' ? 'Search stores...' : 'Search online stores...'}
-          </Text>
-        </View>
-      )}
+      <View style={styles.searchBar}>
+        <Ionicons name="search" size={18} color="#999" />
+        <Text style={styles.searchPlaceholder}>
+          {activeTab === 'Nearby Stores'
+            ? 'Search stores...'
+            : activeTab === '1Fi Marketplace'
+            ? 'Search products or brands...'
+            : 'Search online stores...'}
+        </Text>
+      </View>
 
       {activeTab === 'Top Brands' && (
         <View style={styles.sectionHeaderRow}>
@@ -91,7 +93,7 @@ export default function ShopScreen() {
         </View>
       )}
 
-      {/* Top Brands / Nearby Stores stay simple conditional blanks — no state to preserve */}
+      {/* Top Brands / Nearby Stores stay simple conditional blanks */}
       <View style={[styles.content, activeTab !== 'Top Brands' && styles.hidden]}>
         <View style={styles.blank} />
       </View>
@@ -99,7 +101,7 @@ export default function ShopScreen() {
         <View style={styles.blank} />
       </View>
 
-      {/* Marketplace stays MOUNTED always — just hidden via style, so its fetch state persists */}
+      {/* Marketplace stays MOUNTED — just hidden via style so switching top tabs never refetches */}
       <View style={[styles.content, activeTab !== '1Fi Marketplace' && styles.hidden]}>
         <MarketplaceScreen />
       </View>

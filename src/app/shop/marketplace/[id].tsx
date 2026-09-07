@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Pressable, View, Text, Alert } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Pressable, View, Text } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { EMIPlanSelector } from '@/components/EMIPlanSelector';
+import { OrderConfirmationModal } from '@/components/OrderConfirmationModal';
 import { fetchProductById, type Product } from '@/data/mockProducts';
 import { BrandColors, Spacing } from '@/constants/theme';
 
 export default function ProductDetailScreen() {
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -47,6 +50,7 @@ export default function ProductDetailScreen() {
   const currentPlans = currentVariant?.emiPlans && currentVariant.emiPlans.length > 0
     ? currentVariant.emiPlans
     : product?.emiPlans ?? [];
+  const selectedPlan = currentPlans.find((p) => p.id === selectedPlanId) ?? currentPlans[0];
 
   const handleSelectVariant = (variantId: string) => {
     setSelectedVariantId(variantId);
@@ -188,16 +192,25 @@ export default function ProductDetailScreen() {
       {/* CTA Button */}
       <Pressable
         style={styles.ctaButton}
-        onPress={() => {
-          const plan = currentPlans.find((p) => p.id === selectedPlanId);
-          Alert.alert(
-            'Order Placed',
-            `You've selected ${currentVariant?.label}${currentSku ? ` (${currentSku})` : ''} at ₹${currentPrice.toLocaleString('en-IN')} on a ${plan?.tenureMonths ?? 0}-month plan (₹${plan?.monthlyAmount.toLocaleString('en-IN') ?? 0}/mo).`
-          );
-        }}
+        onPress={() => setIsModalVisible(true)}
       >
         <Text style={styles.ctaText}>Proceed with this plan</Text>
       </Pressable>
+
+      {/* Order & EMI Summary Confirmation Modal */}
+      {product ? (
+        <OrderConfirmationModal
+          visible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          product={product}
+          variant={currentVariant}
+          plan={selectedPlan}
+          onBackToShop={() => {
+            setIsModalVisible(false);
+            router.back();
+          }}
+        />
+      ) : null}
     </ScrollView>
   );
 }

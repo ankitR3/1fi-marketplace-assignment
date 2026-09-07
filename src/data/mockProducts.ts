@@ -208,7 +208,7 @@ function delay(ms: number) {
 }
 
 export async function fetchProducts(): Promise<Product[]> {
-  await delay(2500); // simulate network latency
+  await delay(1000); // simulate network latency
 
   const shouldFail = Math.random() < 0.1; // 10% chance of failure
   if (shouldFail) {
