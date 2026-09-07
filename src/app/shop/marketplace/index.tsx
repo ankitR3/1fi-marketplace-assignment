@@ -94,7 +94,12 @@ export default function MarketplaceScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { padding: Spacing.three, paddingTop: 1, backgroundColor: '#F5F5F7' },
+  list: {
+    padding: Spacing.three,
+    paddingTop: 1,
+    paddingBottom: 100,
+    backgroundColor: '#F5F5F7',
+  },
   centered: {
     flex: 1,
     justifyContent: 'center',

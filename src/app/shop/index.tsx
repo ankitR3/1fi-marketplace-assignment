@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +12,14 @@ type Tab = typeof TABS[number];
 
 export default function ShopScreen() {
   const [activeTab, setActiveTab] = useState<Tab>('Top Brands');
+  const [marketplaceKey, setMarketplaceKey] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      setActiveTab('Top Brands');
+      setMarketplaceKey((k) => k + 1);
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -103,7 +112,7 @@ export default function ShopScreen() {
 
       {/* Marketplace stays MOUNTED — just hidden via style so switching top tabs never refetches */}
       <View style={[styles.content, activeTab !== '1Fi Marketplace' && styles.hidden]}>
-        <MarketplaceScreen />
+        <MarketplaceScreen key={marketplaceKey} />
       </View>
     </View>
   );

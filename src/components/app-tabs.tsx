@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, router } from 'expo-router';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,7 +25,13 @@ function CustomTabBar({ state, navigation }: any) {
               key={route.key}
               disabled={!config.enabled}
               onPress={() => {
-                if (config.enabled) navigation.navigate(route.name);
+                if (config.enabled) {
+                  if (route.name === 'shop') {
+                    router.replace('/shop');
+                  } else {
+                    navigation.navigate(route.name);
+                  }
+                }
               }}
               style={styles.tabItem}
             >

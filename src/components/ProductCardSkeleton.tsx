@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   list: {
     padding: Spacing.three,
     paddingTop: 1,
+    paddingBottom: 100,
     backgroundColor: '#F5F5F7',
   },
   separator: {
